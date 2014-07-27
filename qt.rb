@@ -27,78 +27,78 @@ class Qt < Formula
     sha1 "c9623899fc4e348ce500752cf0858cb48461a507"
   end
   
-  def install
-    ENV.universal_binary if build.universal?
+  # def install
+  #   ENV.universal_binary if build.universal?
 
-    args = ["-prefix", prefix,
-            "-system-zlib",
-            "-qt-libtiff", "-qt-libpng", "-qt-libjpeg",
-            "-confirm-license", "-opensource",
-            "-nomake", "demos", "-nomake", "examples",
-            "-cocoa", "-fast", "-release"]
+  #   args = ["-prefix", prefix,
+  #           "-system-zlib",
+  #           "-qt-libtiff", "-qt-libpng", "-qt-libjpeg",
+  #           "-confirm-license", "-opensource",
+  #           "-nomake", "demos", "-nomake", "examples",
+  #           "-cocoa", "-fast", "-release"]
 
-    if ENV.compiler == :clang
-        args << "-platform"
+  #   if ENV.compiler == :clang
+  #       args << "-platform"
 
-        if MacOS.version >= :mavericks
-          args << "unsupported/macx-clang-libc++"
-        else
-          args << "unsupported/macx-clang"
-        end
-    end
+  #       if MacOS.version >= :mavericks
+  #         args << "unsupported/macx-clang-libc++"
+  #       else
+  #         args << "unsupported/macx-clang"
+  #       end
+  #   end
 
-    args << "-plugin-sql-mysql" if build.with? 'mysql'
+  #   args << "-plugin-sql-mysql" if build.with? 'mysql'
 
-    if build.with? 'd-bus'
-      dbus_opt = Formula["d-bus"].opt_prefix
-      args << "-I#{dbus_opt}/lib/dbus-1.0/include"
-      args << "-I#{dbus_opt}/include/dbus-1.0"
-      args << "-L#{dbus_opt}/lib"
-      args << "-ldbus-1"
-      args << "-dbus-linked"
-    end
+  #   if build.with? 'd-bus'
+  #     dbus_opt = Formula["d-bus"].opt_prefix
+  #     args << "-I#{dbus_opt}/lib/dbus-1.0/include"
+  #     args << "-I#{dbus_opt}/include/dbus-1.0"
+  #     args << "-L#{dbus_opt}/lib"
+  #     args << "-ldbus-1"
+  #     args << "-dbus-linked"
+  #   end
 
-    if build.with? 'qt3support'
-      args << "-qt3support"
-    else
-      args << "-no-qt3support"
-    end
+  #   if build.with? 'qt3support'
+  #     args << "-qt3support"
+  #   else
+  #     args << "-no-qt3support"
+  #   end
 
-    args << "-nomake" << "docs" if build.without? 'docs'
+  #   args << "-nomake" << "docs" if build.without? 'docs'
 
-    if MacOS.prefer_64_bit? or build.universal?
-      args << '-arch' << 'x86_64'
-    end
+  #   if MacOS.prefer_64_bit? or build.universal?
+  #     args << '-arch' << 'x86_64'
+  #   end
 
-    if !MacOS.prefer_64_bit? or build.universal?
-      args << '-arch' << 'x86'
-    end
+  #   if !MacOS.prefer_64_bit? or build.universal?
+  #     args << '-arch' << 'x86'
+  #   end
 
-    args << '-developer-build' if build.include? 'developer'
+  #   args << '-developer-build' if build.include? 'developer'
 
-    system "./configure", *args
-    system "make"
-    ENV.j1
-    system "make install"
+  #   system "./configure", *args
+  #   system "make"
+  #   ENV.j1
+  #   system "make install"
 
-    # what are these anyway?
-    (bin+'pixeltool.app').rmtree
-    (bin+'qhelpconverter.app').rmtree
-    # remove porting file for non-humans
-    (prefix+'q3porting.xml').unlink if build.without? 'qt3support'
+  #   # what are these anyway?
+  #   (bin+'pixeltool.app').rmtree
+  #   (bin+'qhelpconverter.app').rmtree
+  #   # remove porting file for non-humans
+  #   (prefix+'q3porting.xml').unlink if build.without? 'qt3support'
 
-    # Some config scripts will only find Qt in a "Frameworks" folder
-    frameworks.install_symlink Dir["#{lib}/*.framework"]
+  #   # Some config scripts will only find Qt in a "Frameworks" folder
+  #   frameworks.install_symlink Dir["#{lib}/*.framework"]
 
-    # The pkg-config files installed suggest that headers can be found in the
-    # `include` directory. Make this so by creating symlinks from `include` to
-    # the Frameworks' Headers folders.
-    Pathname.glob("#{lib}/*.framework/Headers") do |path|
-      include.install_symlink path => path.parent.basename(".framework")
-    end
+  #   # The pkg-config files installed suggest that headers can be found in the
+  #   # `include` directory. Make this so by creating symlinks from `include` to
+  #   # the Frameworks' Headers folders.
+  #   Pathname.glob("#{lib}/*.framework/Headers") do |path|
+  #     include.install_symlink path => path.parent.basename(".framework")
+  #   end
 
-    Pathname.glob("#{bin}/*.app") { |app| mv app, prefix }
-  end
+  #   Pathname.glob("#{bin}/*.app") { |app| mv app, prefix }
+  # end
 
   test do
     system "#{bin}/qmake", '-project'
