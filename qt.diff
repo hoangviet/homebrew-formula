@@ -1,0 +1,13 @@
+diff --git a/src/gui/kernel/qcocoaapplicationdelegate_mac.mm b/src/gui/kernel/qcocoaapplicationdelegate_mac.mm
+index 80bd7a9..6d61011 100644
+--- a/src/gui/kernel/qcocoaapplicationdelegate_mac.mm
++++ b/src/gui/kernel/qcocoaapplicationdelegate_mac.mm
+@@ -122,7 +122,7 @@ static void cleanupCocoaApplicationDelegate()
+     [dockMenu release];
+     [qtMenuLoader release];
+     if (reflectionDelegate) {
+-        [NSApp setDelegate:reflectionDelegate];
++        [NSApplication setDelegate:reflectionDelegate];
+         [reflectionDelegate release];
+     }
+     [super dealloc];
